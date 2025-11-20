@@ -16,7 +16,7 @@
 Clone the project locally. Note the submodule link to the original project(s). 
 
 ```
-git clone https://github.com/Start9Labs/mempoolwrapper.git
+git clone https://github.com/jeroenroodnat/mempool-startos 
 cd mempool-wrapper
 git submodule update --init --recursive
 docker run --privileged --rm tonistiigi/binfmt --install arm64,riscv64,arm
