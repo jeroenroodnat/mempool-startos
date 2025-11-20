@@ -65,8 +65,11 @@ elif [ "$(yq e ".lightning.type" /root/start9/config.yaml)" = "cln" ]; then
 	echo "Running on Core Lightning..."
 fi
 
-if [ "$(yq e ".enable-electrs" /root/start9/config.yaml)" = "true" ]; then
+if [ "$(yq e ".electrum.type" /root/start9/config.yaml)" = "electrs" ]; then
 	sed -i 's/ELECTRUM_HOST:=127.0.0.1/ELECTRUM_HOST:=electrs.embassy/' start.sh
+	sed -i 's/ELECTRUM_PORT:=50002/ELECTRUM_PORT:=50001/' start.sh
+elif [ "$(yq e ".electrum.type" /root/start9/config.yaml)" = "fulcrum" ]; then
+	sed -i 's/ELECTRUM_HOST:=127.0.0.1/ELECTRUM_HOST:=fulcrum.embassy/' start.sh
 	sed -i 's/ELECTRUM_PORT:=50002/ELECTRUM_PORT:=50001/' start.sh
 else
 	# configure mempool to use just a bitcoind backend

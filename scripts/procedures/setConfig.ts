@@ -11,18 +11,17 @@ export const setConfig: T.ExpectedExports.setConfig = async (
   effects: T.Effects,
   newConfig: CustomConfig
 ) => {
-  const dependsOnElectrs: { [key: string]: string[] } = newConfig?.[
-    "enable-electrs"
-  ]
-    ? { electrs: ["synced"] }
-    : {};
+  // add two const depsElectrs and depsFulcrum for the new Electrum type string in getConfig
+  const depsElectrs: { [key: string]: string[] } = newConfig?.electrum?.type === "electrs"  ? {electrs: []} : {};
+  const depsFulcrum: { [key: string]: string[] } = newConfig?.electrum?.type === "fulcrum"  ? {fulcrum: []} : {};
 
   // add two const depsLnd and depsCln for the new lightning type string in getConfig
   const depsLnd: { [key: string]: string[] } = newConfig?.lightning?.type === "lnd"  ? {lnd: []} : {};
   const depsCln: { [key: string]: string[] } = newConfig?.lightning?.type === "cln"  ? {"c-lightning": []} : {};
     
   return compat.setConfig(effects, newConfig, {
-    ...dependsOnElectrs,
+    ...depsElectrs,
+    ...depsFulcrum,
     ...depsLnd,
     ...depsCln,
   });

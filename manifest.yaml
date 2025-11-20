@@ -1,8 +1,8 @@
 id: mempool
 title: Mempool
-version: 3.2.1.2
+version: 3.2.1.3
 release-notes: |
-  * Update dependency allowed versions for bitcoind and lnd
+  * Add support for Fulcrum as an electrum server
 license: AGPL
 wrapper-repo: "https://github.com/Start9Labs/mempool-wrapper"
 upstream-repo: "https://github.com/mempool/mempool"
@@ -74,9 +74,17 @@ dependencies:
   electrs:
     version: ">=0.9.6 <0.12.0"
     requirement:
-      type: "opt-out"
-      how: Set Enable Electrs to Disabled in the config
+      type: "opt-in"
+      how: Select Electrs in the config
     description: Used to provide an index for address lookups
+    config: ~
+  fulcrum:
+    version: "^2.0.0"
+    requirement:
+      type: "opt-in"
+      how: Select Fulcrum in the config
+    description: Used to provide an index for address lookups
+    config: ~
   lnd:
     version: ">=0.14.3 <0.21.0"
     description: Used to communicate with the Lightning Network.
@@ -113,7 +121,7 @@ volumes:
 alerts:
   start: |
     READ CAREFULLY! When first running Mempool, previous block fee estimates will show as zero values until the service is able to catch up. This is expected behaviour.
-    ALSO: Lookups may be slow or time out altogether while the service is still warming up, or if there are too many other things running on your system. If address lookups aren't working, try restarting electrs and try the lookup again.
+    ALSO: Lookups may be slow or time out altogether while the service is still warming up, or if there are too many other things running on your system. If address lookups aren't working, try restarting electrs or fulcrum and try the lookup again.
 interfaces:
   main:
     name: Mempool Interface
@@ -203,3 +211,4 @@ migrations:
     ">3.0.0.3":
       type: script
       args: ["to"]
+

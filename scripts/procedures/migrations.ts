@@ -2,7 +2,7 @@ import { types as T, compat, matches } from "../deps.ts";
 
 const { shape, boolean, string } = matches;
 
-const current = "3.2.1.2";
+const current = "3.2.1.3";
 
 export const migration: T.ExpectedExports.migration = (
   effects: T.Effects,
@@ -93,6 +93,54 @@ export const migration: T.ExpectedExports.migration = (
           throw new Error("Downgrades are prohibited from this version");
         },
       },
+      "3.2.1.3": {
+        up: compat.migrations.updateConfig(
+          (config) => {
+            const matchElectrumType = shape({
+              electrum: shape({
+                type: string,
+              }),
+            });
+            const matchElectrs = shape(
+              {
+                "enable-electrs ": boolean,
+              },
+              ["enable-electrs "]
+            );
+            if (!matchElectrumType.test(config) && matchElectrs.test(config)) {
+              // add electrum type and delete electrs
+              (config as typeof matchElectrumType._TYPE).electrum.type =
+                "none";
+              delete config["enable-electrs "];
+              return config;
+            }
+            return config;
+          },
+          false,
+          { version: "3.2.1.3", type: "up" }
+        ),
+        down: compat.migrations.updateConfig(
+          (config) => {
+            const matchElectrumType = shape({
+              electrum: shape({
+                type: string?.optional(),
+              }),
+            });
+            const matchElectrs = shape({
+              "enable-electrs": boolean,
+            });
+            if (!matchElectrs.test(config) && matchElectrumType.test(config)) {
+              // delete electrum type and add electrs
+              config["enable-electrs"] = true;
+              delete config.electrum["type"];
+              return config;
+            }
+            return config;
+          },
+          true,
+          { version: "3.2.1.3", type: "down" }
+        ),
+      }
     },
     current
   )(effects, version, ...args);
